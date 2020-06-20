@@ -297,7 +297,23 @@ describe("CloudApiManagerController", function () {
             return expect(updateResponsePromise).to.eventually.be.rejectedWith(
                 /update operation failed because: the asset with name (.*) does not exist/);
         });
-        it("policies: should resolve with {status:ok} if policy with similar name and operation succeeds");
+        it("policies: should resolve with {status:ok} if policy with similar name and operation succeeds", function () {
+            const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
+            const sample_policy_payload = { name, access_rights, active };
+            const returnedSearchResults = tykFindPolicyByNameResponseData;
+
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, 'findPolicyByName');
+            findPolicyByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
+
+            const updateAPiBySystemIdProviderStub = sinon.stub(testController.apiServiceProvider, "updatePolicyById");
+            updateAPiBySystemIdProviderStub.withArgs(sinon.match.string, sample_policy_payload)
+                .returns(Promise.resolve({ status: "ok" }));
+
+            const updateResponsePromise = testController.update('policy', Promise.resolve(sample_policy_payload));
+
+            return expect(updateResponsePromise).to.eventually.have.property("status").equal("ok");
+        });
         it("policies: should reject with error if policy with similar name but operation fails", function () {
             const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
             const sample_policy_payload = { name, access_rights, active };
