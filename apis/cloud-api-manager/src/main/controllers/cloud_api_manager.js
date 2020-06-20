@@ -150,40 +150,73 @@ class CloudApiManagerController {
         }
     }
 
+    /**
+     * Updates an asset, returning a status message indicating success or failure
+     * @param {'api' | 'policy'} type 
+     * @param {Promise<Object>} inputObjectPromise 
+     */
     update(type, inputObjectPromise) {
         switch (type) {
             case 'api':
                 return inputObjectPromise
-                .then(definitionObject => {
-                    const assetName = definitionObject.api_definition.name;
-                    logger.info(`.update: checking if asset with name ${assetName
-                        } exists`);
-                    return this.findAssetIdentifier(type, definitionObject)
-                        .then(systemId => {
-                            logger.info(`.update: systemId for asset with name ${
-                                definitionObject.api_definition.name} is ${systemId}`);
-                            logger.info(`.update: asset with name ${definitionObject.api_definition.name
-                                } already exists, proceeding with update`);
-                            return Promise.resolve({systemId, definitionObject});
-                        })
-                        .catch(error => {
-                            if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
+                    .then(definitionObject => {
+                        const assetName = definitionObject.api_definition.name;
+                        logger.info(`.update: checking if asset with name ${assetName
+                            } exists`);
+                        return this.findAssetIdentifier(type, definitionObject)
+                            .then(systemId => {
+                                logger.info(`.update: systemId for asset with name ${
+                                    definitionObject.api_definition.name} is ${systemId}`);
                                 logger.info(`.update: asset with name ${definitionObject.api_definition.name
-                                    } does not exist, terminating update`);
-                            }
-                            return Promise.reject(error);
-                        });
-                })
-                .then(({systemId, definitionObject}) => {
-                    return this.apiServiceProvider.updateApiBySystemId(systemId, definitionObject);
-                })
-                .catch(error => {
-                    const errorMessage = `update operation failed because: ${error.message}`;
-                    logger.error(`.update: ${errorMessage}`);
-                    return Promise.reject(new Error(errorMessage));
-                });
+                                    } already exists, proceeding with update`);
+                                return Promise.resolve({ systemId, definitionObject });
+                            })
+                            .catch(error => {
+                                if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
+                                    logger.info(`.update: asset with name ${definitionObject.api_definition.name
+                                        } does not exist, terminating update`);
+                                }
+                                return Promise.reject(error);
+                            });
+                    })
+                    .then(({ systemId, definitionObject }) => {
+                        return this.apiServiceProvider.updateApiBySystemId(systemId, definitionObject);
+                    })
+                    .catch(error => {
+                        const errorMessage = `update operation failed because: ${error.message}`;
+                        logger.error(`.update: ${errorMessage}`);
+                        return Promise.reject(new Error(errorMessage));
+                    });
             case 'policy':
-                return inputObjectPromise;
+                return inputObjectPromise
+                    .then(definitionObject => {
+                        const assetName = definitionObject.name;
+                        logger.info(`.update: checking if asset with name ${assetName
+                            } exists`);
+                        return this.findAssetIdentifier(type, definitionObject)
+                            .then(systemId => {
+                                logger.info(`.update: systemId for asset with name ${
+                                    assetName} is ${systemId}`);
+                                logger.info(`.update: asset with name ${assetName
+                                    } already exists, proceeding with update`);
+                                return Promise.resolve({ systemId, definitionObject });
+                            })
+                            .catch(error => {
+                                if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
+                                    logger.info(`.update: asset with name ${assetName
+                                        } does not exist, terminating update`);
+                                }
+                                return Promise.reject(error);
+                            });
+                    })
+                    .then(({ systemId, definitionObject }) => {
+                        return this.apiServiceProvider.updateApiBySystemId(systemId, definitionObject);
+                    })
+                    .catch(error => {
+                        const errorMessage = `update operation failed because: ${error.message}`;
+                        logger.error(`.update: ${errorMessage}`);
+                        return Promise.reject(new Error(errorMessage));
+                    });
             default:
                 const errorMessage = `The specified type, ${type}, is not valid.`;
                 logger.error(errorMessage);
@@ -191,6 +224,11 @@ class CloudApiManagerController {
         }
     }
 
+    /**
+     * Deletes an asset, returning a status message indicating success or failure
+     * @param {'api' | 'policy'} type 
+     * @param {Promise<Object>} inputObjectPromise 
+     */
     delete(type, inputObjectPromise) {
         switch (type) {
             case 'api':
@@ -204,6 +242,12 @@ class CloudApiManagerController {
         }
     }
 
+    /**
+     * Finds an asset by its name, returning the stored asset if successful or
+     * a rejection if otherwise
+     * @param {'api' | 'policy'} type 
+     * @param {Promise<Object>} inputObjectPromise 
+     */
     findAssetIdentifier(type, assetObject) {
         switch (type) {
             case 'api':
