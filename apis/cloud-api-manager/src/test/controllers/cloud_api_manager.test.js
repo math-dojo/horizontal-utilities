@@ -6,8 +6,8 @@ const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 
 const { tykApiSearchResponseData, tykApiResponseData } = require("../resources/sample_api_payload");
-const { tykFindPolicyByNameResponseData, retrievePolicyByIdResponseData 
-    } = require("../resources/sample_policy_payloads");
+const { tykFindPolicyByNameResponseData, retrievePolicyByIdResponseData
+} = require("../resources/sample_policy_payloads");
 
 Object.freeze(tykFindPolicyByNameResponseData);
 Object.freeze(tykApiResponseData);
@@ -83,7 +83,7 @@ describe("CloudApiManagerController", function () {
         it("apis: should return a rejected promise nothing was found", function () {
             const nameToSearchFor = tykApiSearchResponseData.apis[0].api_definition.name;
 
-            const returnedResults = {apis: []};
+            const returnedResults = { apis: [] };
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findApiByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findApiByName");
             findApiByNameProviderStub.returns(Promise.resolve(returnedResults));
@@ -91,7 +91,7 @@ describe("CloudApiManagerController", function () {
             const systemIdPromise = testController.findAssetIdentifier('api', { api_definition: { name: nameToSearchFor } });
             return expect(systemIdPromise).to.eventually.be.rejectedWith(/the asset with name (.*) does not exist/);
         });
-        it("policies: should return an id if the provider search returns one possibility", function() {
+        it("policies: should return an id if the provider search returns one possibility", function () {
             const nameToSearchFor = tykFindPolicyByNameResponseData.Data[0].name;
             const expectedSystemId = tykFindPolicyByNameResponseData.Data[0]._id;
 
@@ -102,7 +102,7 @@ describe("CloudApiManagerController", function () {
             const systemIdPromise = testController.findAssetIdentifier('policy', { name: nameToSearchFor });
             return expect(systemIdPromise).to.eventually.equal(expectedSystemId);
         });
-        it("policies: should return an id if the provider search returns multiple possibilities", function() {
+        it("policies: should return an id if the provider search returns multiple possibilities", function () {
             const nameToSearchFor = tykFindPolicyByNameResponseData.Data[0].name;
             const expectedSystemId = tykFindPolicyByNameResponseData.Data[0]._id;
             const multipleResults = {
@@ -121,24 +121,24 @@ describe("CloudApiManagerController", function () {
             const systemIdPromise = testController.findAssetIdentifier('policy', { name: nameToSearchFor });
             return expect(systemIdPromise).to.eventually.equal(expectedSystemId);
         });
-        it("policies: should return a rejected promise nothing was found", function() {
+        it("policies: should return a rejected promise nothing was found", function () {
             const nameToSearchFor = tykFindPolicyByNameResponseData.Data[0].name;
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findPolicyByName");
-            findPolicyByNameProviderStub.returns(Promise.resolve({Data:[]}));
+            findPolicyByNameProviderStub.returns(Promise.resolve({ Data: [] }));
 
             const systemIdPromise = testController.findAssetIdentifier('policy', { name: nameToSearchFor });
             return expect(systemIdPromise).to.eventually.be.rejectedWith(/the asset with name (.*) does not exist/);
         });
     });
     describe(".create", function () {
-        it("apis: should resolve with {status:ok} if no api with similar name and operation succeeds", function() {
+        it("apis: should resolve with {status:ok} if no api with similar name and operation succeeds", function () {
             const { name, auth, definition, version_data, proxy } = tykApiResponseData.api_definition;
             const sample_api_payload = {
                 api_definition: { name, auth, definition, version_data, proxy }
             };
-            const returnedSearchResults = {apis: []};
+            const returnedSearchResults = { apis: [] };
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
 
@@ -146,18 +146,18 @@ describe("CloudApiManagerController", function () {
             findApiByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
 
             const createApiProviderStub = sinon.stub(testController.apiServiceProvider, "createApi");
-            createApiProviderStub.withArgs(sample_api_payload).returns(Promise.resolve({status:"ok"}));
+            createApiProviderStub.withArgs(sample_api_payload).returns(Promise.resolve({ status: "ok" }));
 
             const creationResponsePromise = testController.create('api', Promise.resolve(sample_api_payload));
 
             return expect(creationResponsePromise).to.eventually.have.property("status").equal("ok");
         });
-        it("apis: should reject with error if no api with similar name but operation fails", function() {
+        it("apis: should reject with error if no api with similar name but operation fails", function () {
             const { name, auth, definition, version_data, proxy } = tykApiResponseData.api_definition;
             const sample_api_payload = {
                 api_definition: { name, auth, definition, version_data, proxy }
             };
-            const returnedSearchResults = {apis: []};
+            const returnedSearchResults = { apis: [] };
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
 
@@ -174,13 +174,13 @@ describe("CloudApiManagerController", function () {
             return expect(creationResponsePromise).to.eventually.be.rejectedWith(
                 /create operation failed because: (.*) some generic error/);
         });
-        it("apis: should reject with error if api with similar name", function() {
+        it("apis: should reject with error if api with similar name", function () {
             const { name, auth, definition, version_data, proxy } = tykApiResponseData.api_definition;
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findApiByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findApiByName");
             findApiByNameProviderStub.returns(Promise.resolve(tykApiSearchResponseData));
-            
+
             const creationResponsePromise = testController.create('api', Promise.resolve({
                 api_definition: { name, auth, definition, version_data, proxy }
             }));
@@ -188,7 +188,7 @@ describe("CloudApiManagerController", function () {
             return expect(creationResponsePromise).to.eventually.be.rejectedWith(
                 /create operation failed because: an asset with name (.*) already exists/);
         });
-        it("policies: should resolve with {status:ok} if no policy with similar name and operation succeeds", function() {
+        it("policies: should resolve with {status:ok} if no policy with similar name and operation succeeds", function () {
             const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
             const policyCreatePayload = {
                 name, access_rights, active
@@ -196,17 +196,17 @@ describe("CloudApiManagerController", function () {
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findPolicyByName");
-            findPolicyByNameProviderStub.returns(Promise.resolve({Data:[]}));
+            findPolicyByNameProviderStub.returns(Promise.resolve({ Data: [] }));
 
-            const createPolicyProviderStub = sinon.stub(testController.apiServiceProvider, "createPolicy");           
+            const createPolicyProviderStub = sinon.stub(testController.apiServiceProvider, "createPolicy");
             createPolicyProviderStub.withArgs(policyCreatePayload)
-                .returns(Promise.resolve({status:"ok"}));
+                .returns(Promise.resolve({ status: "ok" }));
 
             const creationResponsePromise = testController.create('policy', Promise.resolve(policyCreatePayload));
 
             return expect(creationResponsePromise).to.eventually.have.property("status").equal("ok");
         });
-        it("policies: should reject with error if no policy with similar name but operation fails", function() {
+        it("policies: should reject with error if no policy with similar name but operation fails", function () {
             const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
             const policyCreatePayload = {
                 name, access_rights, active
@@ -214,10 +214,10 @@ describe("CloudApiManagerController", function () {
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findPolicyByName");
-            findPolicyByNameProviderStub.returns(Promise.resolve({Data:[]}));
+            findPolicyByNameProviderStub.returns(Promise.resolve({ Data: [] }));
 
             const createPolicyProviderStub = sinon.stub(testController.apiServiceProvider, "createPolicy");
-            const policyCreateProviderError = new Error(`.createPolicy failed because: some generic error`);            
+            const policyCreateProviderError = new Error(`.createPolicy failed because: some generic error`);
             createPolicyProviderStub.withArgs(policyCreatePayload)
                 .returns(Promise.reject(policyCreateProviderError));
 
@@ -226,13 +226,13 @@ describe("CloudApiManagerController", function () {
             return expect(creationResponsePromise).to.eventually.be.rejectedWith(
                 /create operation failed because: (.*) some generic error/);
         });
-        it("policies: should reject with error if policy with similar name", function() {
+        it("policies: should reject with error if policy with similar name", function () {
             const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findPolicyByName");
             findPolicyByNameProviderStub.returns(Promise.resolve(tykFindPolicyByNameResponseData));
-            
+
             const creationResponsePromise = testController.create('policy', Promise.resolve({
                 name, access_rights, active
             }));
@@ -243,20 +243,41 @@ describe("CloudApiManagerController", function () {
     });
     describe(".update", function () {
         it("apis: should resolve with {status:ok} if api with similar name and operation succeeds");
-        it("apis: should reject with error if api with similar name but operation fails");
+        it("apis: should reject with error if api with similar name but operation fails", function () {
+            const { name, auth, definition, version_data, proxy } = tykApiSearchResponseData.apis[0].api_definition;
+            const sample_api_payload = {
+                api_definition: { name, auth, definition, version_data, proxy }
+            };
+            const returnedSearchResults = tykApiSearchResponseData;
+
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const findApiByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findApiByName");
+            findApiByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
+
+            const updateAPiBySystemIdProviderStub = sinon.stub(testController.apiServiceProvider, "updateApiBySystemId");
+            const errorReason = ".updateApiBySystemId failed because: some generic error";
+            const apiUpdateProviderError = new Error(errorReason);
+            updateAPiBySystemIdProviderStub.withArgs(sinon.match.string, sample_api_payload)
+                .returns(Promise.reject(apiUpdateProviderError));
+
+            const updateResponsePromise = testController.update('api', Promise.resolve(sample_api_payload));
+
+            return expect(updateResponsePromise).to.eventually.be.rejectedWith(
+                new RegExp(`update operation failed because: (.*)${errorReason}`));
+        });
         it("apis: should reject with error if no api with similar name", function () {
             const { name, auth, definition, version_data, proxy } = tykApiResponseData.api_definition;
 
             const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
             const findApiByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findApiByName");
-            findApiByNameProviderStub.returns(Promise.resolve({apis:[]}));
-            
-            const creationResponsePromise = testController.update('api', Promise.resolve({
+            findApiByNameProviderStub.returns(Promise.resolve({ apis: [] }));
+
+            const updateResponsePromise = testController.update('api', Promise.resolve({
                 api_definition: { name, auth, definition, version_data, proxy }
             }));
 
-            return expect(creationResponsePromise).to.eventually.be.rejectedWith(
-                /update operation failed because: the asset with name (.*) does not exist/);            
+            return expect(updateResponsePromise).to.eventually.be.rejectedWith(
+                /update operation failed because: the asset with name (.*) does not exist/);
         });
         it("policies: should resolve with {status:ok} if policy with similar name and operation succeeds");
         it("policies: should reject with error if policy with similar name but operation fails");
