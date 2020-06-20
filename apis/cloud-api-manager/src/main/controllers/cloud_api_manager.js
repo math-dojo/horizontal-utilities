@@ -210,7 +210,7 @@ class CloudApiManagerController {
                             });
                     })
                     .then(({ systemId, definitionObject }) => {
-                        return this.apiServiceProvider.updateApiBySystemId(systemId, definitionObject);
+                        return this.apiServiceProvider.updatePolicyById(systemId, definitionObject);
                     })
                     .catch(error => {
                         const errorMessage = `update operation failed because: ${error.message}`;
