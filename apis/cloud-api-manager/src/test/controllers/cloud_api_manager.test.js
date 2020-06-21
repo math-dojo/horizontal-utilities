@@ -404,8 +404,44 @@ describe("CloudApiManagerController", function () {
             return expect(deleteResponsePromise).to.eventually.be.rejectedWith(
                 /delete operation failed because: the asset with name (.*) does not exist/);
         });
-        it("policies: should resolve with {status:ok} if policy with similar name and operation succeeds");
-        it("policies: should reject with error if policy with similar name but operation fails");
+        it("policies: should resolve with {status:ok} if policy with similar name and operation succeeds", function () {
+            const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
+            const sample_policy_payload = { name, access_rights, active };
+            const returnedSearchResults = tykFindPolicyByNameResponseData;
+
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, 'findPolicyByName');
+            findPolicyByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
+
+            const deletePolicyBySystemIdProviderStub = sinon.stub(testController.apiServiceProvider, 'deletePolicyById');
+            deletePolicyBySystemIdProviderStub.withArgs(sinon.match.string)
+                .returns(Promise.resolve({ status: "ok" }));
+
+            const deleteResponsePromise = testController.delete('policy', Promise.resolve(sample_policy_payload));
+
+            return expect(deleteResponsePromise).to.eventually.have.property("status").equal("ok");
+        });
+
+        it("policies: should reject with error if policy with similar name but operation fails", function () {
+            const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
+            const sample_policy_payload = { name, access_rights, active };
+            const returnedSearchResults = tykFindPolicyByNameResponseData;
+
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const findPolicyByNameProviderStub = sinon.stub(testController.apiServiceProvider, 'findPolicyByName');
+            findPolicyByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
+
+            const deletePolicyBySystemIdProviderStub = sinon.stub(testController.apiServiceProvider, 'deletePolicyById');
+            const errorReason = ".updatePolicyById failed because: some generic error";
+            const policyUpdateProviderError = new Error(errorReason);
+            deletePolicyBySystemIdProviderStub.withArgs(sinon.match.string)
+                .returns(Promise.reject(policyUpdateProviderError));
+
+            const deleteResponsePromise = testController.delete('policy', Promise.resolve(sample_policy_payload));
+
+            return expect(deleteResponsePromise).to.eventually.be.rejectedWith(
+                new RegExp(`delete operation failed because: (.*)${errorReason}`));
+        });
         it("policies: should reject with error if no policy with similar name", function () {
             const { name, access_rights, active } = tykFindPolicyByNameResponseData.Data[0];
             const sample_policy_payload = { name, access_rights, active };
