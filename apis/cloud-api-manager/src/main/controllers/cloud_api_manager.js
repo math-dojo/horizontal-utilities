@@ -240,14 +240,14 @@ class CloudApiManagerController {
                         return this.findAssetIdentifier(type, definitionObject)
                             .then(systemId => {
                                 logger.info(`.delete: systemId for asset with name ${
-                                    definitionObject.api_definition.name} is ${systemId}`);
-                                logger.info(`.delete: asset with name ${definitionObject.api_definition.name
+                                    assetName} is ${systemId}`);
+                                logger.info(`.delete: asset with name ${assetName
                                     } already exists, proceeding with delete`);
                                 return Promise.resolve({ systemId });
                             })
                             .catch(error => {
                                 if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
-                                    logger.info(`.delete: asset with name ${definitionObject.api_definition.name
+                                    logger.info(`.delete: asset with name ${assetName
                                         } does not exist, terminating delete`);
                                 }
                                 return Promise.reject(error);
