@@ -232,7 +232,35 @@ class CloudApiManagerController {
     delete(type, inputObjectPromise) {
         switch (type) {
             case 'api':
-                return inputObjectPromise;
+                return inputObjectPromise
+                    .then(definitionObject => {
+                        const assetName = definitionObject.api_definition.name;
+                        logger.info(`.delete: checking if asset with name ${assetName
+                            } exists`);
+                        return this.findAssetIdentifier(type, definitionObject)
+                            .then(systemId => {
+                                logger.info(`.delete: systemId for asset with name ${
+                                    definitionObject.api_definition.name} is ${systemId}`);
+                                logger.info(`.delete: asset with name ${definitionObject.api_definition.name
+                                    } already exists, proceeding with delete`);
+                                return Promise.resolve({ systemId });
+                            })
+                            .catch(error => {
+                                if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
+                                    logger.info(`.delete: asset with name ${definitionObject.api_definition.name
+                                        } does not exist, terminating delete`);
+                                }
+                                return Promise.reject(error);
+                            });
+                    })
+                    .then(({ systemId }) => {
+                        return this.apiServiceProvider.deleteApiBySystemId(systemId);
+                    })
+                    .catch(error => {
+                        const errorMessage = `delete operation failed because: ${error.message}`;
+                        logger.error(`.delete: ${errorMessage}`);
+                        return Promise.reject(new Error(errorMessage));
+                    });
             case 'policy':
                 return inputObjectPromise;
             default:
