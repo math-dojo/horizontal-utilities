@@ -349,7 +349,25 @@ describe("CloudApiManagerController", function () {
         });
     });
     describe(".delete", function () {
-        it("apis: should resolve with {status:ok} if api with similar name and operation succeeds");
+        it("apis: should resolve with {status:ok} if api with similar name and operation succeeds", function () {
+            const { name, auth, definition, version_data, proxy } = tykApiSearchResponseData.apis[0].api_definition;
+            const sample_api_payload = {
+                api_definition: { name, auth, definition, version_data, proxy }
+            };
+            const returnedSearchResults = tykApiSearchResponseData;
+
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const findApiByNameProviderStub = sinon.stub(testController.apiServiceProvider, "findApiByName");
+            findApiByNameProviderStub.returns(Promise.resolve(returnedSearchResults));
+
+            const deleteApiBySystemIdProviderStub = sinon.stub(testController.apiServiceProvider, "deleteApiBySystemId");
+            deleteApiBySystemIdProviderStub.withArgs(sinon.match.string)
+                .returns(Promise.resolve({ status: "ok" }));
+
+            const deleteResponsePromise = testController.delete('api', Promise.resolve(sample_api_payload));
+
+            return expect(deleteResponsePromise).to.eventually.have.property("status").equal("ok");
+        });
         it("apis: should reject with error if api with similar name but operation fails", function () {
             const { name, auth, definition, version_data, proxy } = tykApiSearchResponseData.apis[0].api_definition;
             const sample_api_payload = {
