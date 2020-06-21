@@ -262,8 +262,35 @@ class CloudApiManagerController {
                         return Promise.reject(new Error(errorMessage));
                     });
             case 'policy':
-                return inputObjectPromise;
-            default:
+                return inputObjectPromise
+                    .then(definitionObject => {
+                        const assetName = definitionObject.name;
+                        logger.info(`.delete: checking if asset with name ${assetName
+                            } exists`);
+                        return this.findAssetIdentifier(type, definitionObject)
+                            .then(systemId => {
+                                logger.info(`.delete: systemId for asset with name ${
+                                    assetName} is ${systemId}`);
+                                logger.info(`.delete: asset with name ${assetName
+                                    } already exists, proceeding with delete`);
+                                return Promise.resolve({ systemId, definitionObject });
+                            })
+                            .catch(error => {
+                                if (/asset with name (.*) does not exist in the provider/.test(error.message)) {
+                                    logger.info(`.delete: asset with name ${assetName
+                                        } does not exist, terminating delete`);
+                                }
+                                return Promise.reject(error);
+                            });
+                    })
+                    .then(({ systemId, definitionObject }) => {
+                        return this.apiServiceProvider.deletePolicyById(systemId, definitionObject);
+                    })
+                    .catch(error => {
+                        const errorMessage = `delete operation failed because: ${error.message}`;
+                        logger.error(`.delete: ${errorMessage}`);
+                        return Promise.reject(new Error(errorMessage));
+                    }); default:
                 const errorMessage = `The specified type, ${type}, is not valid.`;
                 logger.error(errorMessage);
                 return Promise.reject(new Error(errorMessage));
