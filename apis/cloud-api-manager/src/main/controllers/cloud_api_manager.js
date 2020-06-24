@@ -46,18 +46,7 @@ class CloudApiManagerController {
         operation,
         type,
     }) {
-        const definitionObjectPromise = fsReadPromisified.readFile(filePath)
-            .then(
-                result => {
-                    logger.info(`About to parse supplied file at: ${filePath}`);
-                    const inputObject = JSON.parse(result.toString('utf-8'));
-                    return inputObject;
-                }
-            )
-            .catch(error => {
-                logger.error(`Failure parsing the file at ${filePath} because of ${error.message}`);
-                throw new Error(error);
-            });
+        const definitionObjectPromise = this.readJsonAssetObject(filePath);
         switch (operation) {
             case 'create':
                 return this.create(type, definitionObjectPromise);
@@ -70,6 +59,27 @@ class CloudApiManagerController {
                 logger.error(errorMessage);
                 return Promise.reject(new Error(errorMessage));
         }
+    }
+
+    /**
+     * Reads the json file at the path returning it as a 
+     * promise object
+     * @param {string} filePath Path to the asset to read
+     * @returns {Promise<Object>} The asset as a dictionary object
+     */
+    readJsonAssetObject(filePath) {
+        return fsReadPromisified.readFile(filePath)
+            .then(
+                result => {
+                    logger.info(`About to parse supplied file at: ${filePath}`);
+                    const inputObject = JSON.parse(result.toString('utf-8'));
+                    return inputObject;
+                }
+            )
+            .catch(error => {
+                logger.error(`Failure parsing the file at ${filePath} because of ${error.message}`);
+                throw new Error(error);
+            });
     }
 
     /**

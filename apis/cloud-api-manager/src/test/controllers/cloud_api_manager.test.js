@@ -456,5 +456,43 @@ describe("CloudApiManagerController", function () {
                 /delete operation failed because: the asset with name (.*) does not exist/);
         });
     });
+
+    describe(".execute", function () {
+        it("should call the appropriate operation based on the supplied param", function () {
+            const testController = new CloudApiManagerController({ provider: 'tyk', authorisation: 'fizzbuzz' });
+            const controllerReadAssetStub = sinon.stub(testController, 'readJsonAssetObject');
+            const readAssetObjectPromise = Promise.resolve({});
+            controllerReadAssetStub.returns(readAssetObjectPromise);
+
+            const operation = 'create';
+            const controllerCreateOperationSpy = sinon.spy(testController, operation);
+
+            testController.execute({
+                filePath: 'somePath',
+                operation,
+                type: 'policy'
+            });
+
+            expect(controllerCreateOperationSpy.calledWith('policy', readAssetObjectPromise)).to.be.true;
+
+            const updateOperation = 'update';
+            const controllerUpdateOperationSpy = sinon.spy(testController, updateOperation);
+            testController.execute({
+                filePath: 'somePath',
+                operation: updateOperation,
+                type: 'api'
+            });
+            expect(controllerUpdateOperationSpy.calledWith('api', readAssetObjectPromise)).to.be.true;
+
+            const deleteOperation = 'delete';
+            const controllerDeleteOperationSpy = sinon.spy(testController, deleteOperation);
+            testController.execute({
+                filePath: 'somePath',
+                operation: deleteOperation,
+                type: 'policy'
+            });
+            expect(controllerDeleteOperationSpy.calledWith('policy', readAssetObjectPromise)).to.be.true;
+        });
+    });
 });
 
