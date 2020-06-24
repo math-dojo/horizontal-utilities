@@ -12,10 +12,12 @@ class CloudApiManagerController {
      * @param {Object} controllerConfig - The config for the controller
      * @param {string} controllerConfig.provider - The product that provides the cloud-api-manager
      * @param {string} controllerConfig.authorisation - The security token used to authorise interactions with the manager
+     * @param {string} controllerConfig.baseUrlForProvider - The base url for the cloud provider
      */
     constructor({
         provider,
-        authorisation
+        authorisation,
+        baseUrlForProvider
     }) {
         if ((!authorisation) || authorisation.length < 1) {
             const errorMessage = `authorisation cannot be undefined, null or empty`;
@@ -24,7 +26,11 @@ class CloudApiManagerController {
         }
         switch (provider) {
             case 'tyk':
-                this.apiServiceProvider = new TykDashboardService(authorisation);
+                if (baseUrlForProvider) {
+                    this.apiServiceProvider = new TykDashboardService(authorisation, baseUrlForProvider);
+                } else {
+                    this.apiServiceProvider = new TykDashboardService(authorisation);
+                }
                 break;
             default:
                 const errorMessage = `the specified provider "${provider}" is not configured in this package`;
