@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const logger = new (require('../logging/custom_logger'))("cloud-api-manager:index");
 const argv = require('yargs')
     .alias('f', 'filePath')
     .nargs('f', 1)
