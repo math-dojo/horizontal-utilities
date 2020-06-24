@@ -38,8 +38,8 @@ class CloudApiManagerController {
      * by the params
      * @param {Object} executionConfig - The config for the behaviour to executre
      * @param {string} executionConfig.filePath - The filePath of the object to be managed
-     * @param {string} executionConfig.operation - The operation to perform with the supplied object via filePath
-     * @param {string} executionConfig.type - The type of object at the filePath
+     * @param {'create' | 'update' | 'delete'} executionConfig.operation - The operation to perform with the supplied object via filePath
+     * @param {'api' | 'policy'} executionConfig.type - The type of object at the filePath
      */
     execute({
         filePath,
