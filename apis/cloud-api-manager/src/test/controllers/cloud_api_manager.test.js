@@ -472,7 +472,7 @@ describe("CloudApiManagerController", function () {
                 filePath: 'somePath',
                 operation,
                 type: 'policy'
-            });
+            }).catch(error => logger.error(error));;
 
             expect(controllerCreateOperationSpy.calledWith('policy', readAssetObjectPromise)).to.be.true;
 
@@ -482,7 +482,7 @@ describe("CloudApiManagerController", function () {
                 filePath: 'somePath',
                 operation: updateOperation,
                 type: 'api'
-            });
+            }).catch(error => logger.error(error));;
             expect(controllerUpdateOperationSpy.calledWith('api', readAssetObjectPromise)).to.be.true;
 
             const deleteOperation = 'delete';
@@ -491,7 +491,7 @@ describe("CloudApiManagerController", function () {
                 filePath: 'somePath',
                 operation: deleteOperation,
                 type: 'policy'
-            });
+            }).catch(error => logger.error(error));
             expect(controllerDeleteOperationSpy.calledWith('policy', readAssetObjectPromise)).to.be.true;
         });
     });
