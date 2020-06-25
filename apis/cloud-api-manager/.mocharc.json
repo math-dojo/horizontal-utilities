@@ -1,3 +1,6 @@
 {
-    "spec": "src/test/**/*.test.js"
+    "spec": [
+        "src/test/**/*.test.js",
+        "index.test.js"
+    ]
 }
