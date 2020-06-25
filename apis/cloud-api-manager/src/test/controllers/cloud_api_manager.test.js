@@ -15,6 +15,7 @@ Object.freeze(tykApiSearchResponseData);
 Object.freeze(retrievePolicyByIdResponseData);
 
 const { CloudApiManagerController } = require("../../main/controllers/cloud_api_manager");
+const logger = new (require('../../main/logging/custom_logger'))("cloud-api-manager-test:controllers:cloud_api_manager");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
