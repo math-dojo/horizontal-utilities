@@ -7,7 +7,21 @@ const { tykFindPolicyByNameResponseData, retrievePolicyByIdResponseData,
     updatePolicyByIdResponseData, deletePolicyByIdResponseData
 } = require("../sample_policy_payloads");
 
-function startServerAndReturn(desiredPort) {
+/**
+ * 
+ * @param {number} desiredPort 
+ * @param {object} routeDisableConfig Config object allowing certain routes to be disabled on server creation
+ * @param {boolean} [routeDisableConfig.disableApiSearch=false] Disables api search route
+ * @param {boolean} [routeDisableConfig.disableApiCrudOps=false] Disables api CRUD operation routes 
+ * @param {boolean} [routeDisableConfig.disablePolicySearch=false] Disables policy search route
+ * @param {boolean} [routeDisableConfig.disablePolicyCrudOps=false] Disables policy CRUD operation routes
+ */
+function startServerAndReturn(desiredPort, {
+    disableApiSearch = false,
+    disableApiCrudOps = false,
+    disablePolicySearch = false,
+    disablePolicyCrudOps = false
+} = {}) {
     const express = require('express');
     const app = express();
 
@@ -19,21 +33,26 @@ function startServerAndReturn(desiredPort) {
         }
     })
 
-    app.get('/api/apis/search', function (req, res) {
-        res.send(tykApiSearchResponseData);
-    });
-
-    app.all(/\/api\/apis\/([A-z]?[0-9]?)+$/, function (req, res) {
-        res.send(tykCreateApiResponseData);
-    });
-
-    app.get('/api/portal/policies/search', function (req, res) {
-        res.send(tykFindPolicyByNameResponseData);
-    });
-
-    app.all(/api\/portal\/policies\/([A-z]?[0-9]?)+$/, function (req, res) {
-        res.send(updatePolicyByIdResponseData);
-    });
+    if (!disableApiSearch) {
+        app.get('/api/apis/search', function (req, res) {
+            res.send(tykApiSearchResponseData);
+        });
+    }
+    if (!disableApiCrudOps) {
+        app.all(/\/api\/apis\/([A-z]?[0-9]?)+$/, function (req, res) {
+            res.send(tykCreateApiResponseData);
+        });
+    }
+    if (!disablePolicySearch) {
+        app.get('/api/portal/policies/search', function (req, res) {
+            res.send(tykFindPolicyByNameResponseData);
+        });
+    }
+    if (!disablePolicyCrudOps) {
+        app.all(/api\/portal\/policies\/([A-z]?[0-9]?)+$/, function (req, res) {
+            res.send(updatePolicyByIdResponseData);
+        });
+    }
 
     app.listen(desiredPort, function () {
         console.log(`Mock tyk provider listening on port ${desiredPort}!`);
