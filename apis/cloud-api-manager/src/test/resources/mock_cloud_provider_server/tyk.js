@@ -1,3 +1,4 @@
+const logger = new (require("../../../main/logging/custom_logger"))("cloud-api-manager-test:mock_cloud_provider_server:tyk");
 const { tykApiResponseData, tykDeleteApiResponse, tykUpdateApiResponseData,
     tykCreateApiResponseData, tykCreateApiRequestObject, tykUpdateApiRequestObject,
     tykApiSearchResponseData } = require("../sample_api_payload");
@@ -60,7 +61,7 @@ function startServerAndReturn(desiredPort, {
     });
 
     app.listen(desiredPort, function () {
-        console.log(`Mock tyk provider listening on port ${desiredPort}!`);
+        logger.info(`Mock tyk provider listening on port ${desiredPort}!`);
     });
 
     return app;
