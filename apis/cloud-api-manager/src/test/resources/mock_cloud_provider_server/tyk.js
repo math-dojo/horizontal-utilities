@@ -60,11 +60,9 @@ function startServerAndReturn(desiredPort, {
         res.status(404).send("not found");
     });
 
-    app.listen(desiredPort, function () {
-        logger.info(`Mock tyk provider listening on port ${desiredPort}!`);
+    return app.listen(desiredPort, function () {
+        logger.info(`Mock tyk provider listening on port ${this.address().port}!`);
     });
-
-    return app;
 }
 
 module.exports.tyk = startServerAndReturn;
