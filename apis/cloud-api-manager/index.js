@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const logger = new (require('../logging/custom_logger'))("cloud-api-manager:index");
+const logger = new (require('./src/main/logging/custom_logger'))("cloud-api-manager:index");
+
 const argv = require('yargs')
     .alias('f', 'filePath')
     .nargs('f', 1)
@@ -30,3 +31,17 @@ const argv = require('yargs')
     .epilogue('the environment parameter CLOUD_APIMGT_AUTHORISATION needs to be set in order for this cli to function.')
     .help()
     .argv;
+
+const { CloudApiManagerController } = require('./src/main/controllers/cloud_api_manager');
+
+function main({ filePath, operation, type, provider, authorisation, baseUrlForProvider }) {
+    const controller = new CloudApiManagerController({ provider, authorisation, baseUrlForProvider });
+    return controller.execute({ filePath, operation, type })
+        .then(result => {
+            logger.info(`success: ${operation} for ${type} asset with provider ${provider} at ${baseUrlForProvider} succeeded`);
+        })
+        .catch(error => {
+            logger.error(`failure: ${operation} for ${type} asset with provider ${provider} at ${baseUrlForProvider} failed`);
+            process.exitCode = 1;
+        });
+}
