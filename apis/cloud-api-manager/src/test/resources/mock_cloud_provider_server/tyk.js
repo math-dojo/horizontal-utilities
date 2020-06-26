@@ -12,7 +12,7 @@ function startServerAndReturn(desiredPort) {
     const app = express();
 
     app.use(function (req, res, next) {
-        if (/Bearer (.+)/.test(req.headers.authorization)) {
+        if (/(.+)/.test(req.headers.authorization)) {
             next();
         } else {
             res.status(401).send('API call unauthorised call');
