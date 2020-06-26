@@ -54,6 +54,11 @@ function startServerAndReturn(desiredPort, {
         });
     }
 
+    /* Default to 400 series error for unknown routes */
+    app.all(/\/(.+)$/, function (req, res) {
+        res.status(404).send("not found");
+    });
+
     app.listen(desiredPort, function () {
         console.log(`Mock tyk provider listening on port ${desiredPort}!`);
     });
