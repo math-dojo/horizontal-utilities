@@ -36,6 +36,7 @@ const argv = require('yargs')
 const { CloudApiManagerController } = require('./src/main/controllers/cloud_api_manager');
 
 function main({ filePath, operation, type, provider, authorisation, baseUrlForProvider }) {
+    logger.info("starting program execution");
     const controller = new CloudApiManagerController({ provider, authorisation, baseUrlForProvider });
     return controller.execute({ filePath, operation, type })
         .then(result => {
@@ -46,3 +47,5 @@ function main({ filePath, operation, type, provider, authorisation, baseUrlForPr
             process.exitCode = 1;
         });
 }
+
+main(argv);
