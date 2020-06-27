@@ -333,6 +333,9 @@ class CloudApiManagerController {
                         logger.info(`${searchResults.apis.length} search result(s) for asset name: ${desiredName}`);
                         const matchingResults = searchResults.apis.filter(eachApi =>
                             desiredName === eachApi.api_definition.name);
+                        if (matchingResults.length !== 1) {
+                            throw Error(`the asset with name ${desiredName} does not exist in the provider`);
+                        }
                         return matchingResults[0].api_definition.id;
                     })
                     .catch(error => {
