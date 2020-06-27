@@ -61,7 +61,7 @@ describe("CloudApiManagerController", function () {
             const systemIdPromise = testController.findAssetIdentifier('api', { api_definition: { name: nameToSearchFor } });
             return expect(systemIdPromise).to.eventually.equal(expectedSystemId);
         });
-        it("apis: should return an id if the provider search returns multiple possibilities", function () {
+        it("apis: should return a single matching entry id if the provider search returns multiple possibilities", function () {
             const nameToSearchFor = tykApiResponseData.api_definition.name;
             const expectedSystemId = tykApiResponseData.api_definition.id;
             const multipleResults = {
@@ -81,7 +81,7 @@ describe("CloudApiManagerController", function () {
             return expect(systemIdPromise).to.eventually.equal(expectedSystemId);
 
         });
-        it("apis: should return a rejected promise nothing was found", function () {
+        it("apis: should return a rejected promise if nothing was found", function () {
             const nameToSearchFor = tykApiSearchResponseData.apis[0].api_definition.name;
 
             const returnedResults = { apis: [] };
