@@ -8,6 +8,7 @@ const expect = chai.expect;
 
 const util = require('util');
 const execFile = util.promisify(require('child_process').execFile);
+const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 
 const { tyk } = require('./src/test/resources/mock_cloud_provider_server/tyk');
@@ -62,7 +63,22 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
         env: envVars
     };
 
-    return execFile('node', args, execConfig)
+    return exec('which node')
+        .then(({ stdout, stderr }) => {
+            const nodeRegeEx = /\/(.+)\/node$/;
+            const searchResult = nodeRegeEx.exec(stdout.trim());
+            const nodeLocation = searchResult ? searchResult[0] : null;
+
+            if (nodeLocation) {
+                logger.info(`node executable found: ${stdout}`);
+                return Promise.resolve(nodeLocation);
+            }
+            logger.error(`node could not be found because: ${stderr}`);
+            return Promise.reject(new Error(`node could not be found because: ${stderr}`))
+
+        })
+        .then(nodeExecutableLocation =>
+            execFile(nodeExecutableLocation, args, execConfig))
         .then(({ stderr, stdout }) => {
             logger.info(`successful execution`);
             logger.info(`stdout was: ${stdout}`);
