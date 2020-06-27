@@ -76,7 +76,7 @@ class CloudApiManagerController {
      * @returns {Promise<Object>} The asset as a dictionary object
      */
     readJsonAssetObject(filePath) {
-        return fsReadPromisified.readFile(filePath)
+        return fsReadPromisified(filePath)
             .then(
                 result => {
                     logger.info(`About to parse supplied file at: ${filePath}`);
