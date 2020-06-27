@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const execFile = util.promisify(require('child_process').execFile);
 const path = require('path');
 
 const { tyk } = require('./src/test/resources/mock_cloud_provider_server/tyk');
@@ -41,7 +41,7 @@ describe("Index", function () {
 
 function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider }) {
     const args = [
-        '\"./index.js\"',
+        `${path.resolve(process.cwd(), './index.js')}`,
         '--filePath',
         `${pathToAsset}`,
         '--operation',
@@ -53,7 +53,6 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
         '--baseUrlForProvider',
         `${baseUrlForProvider}`
     ];
-    const command = args.join(' ');
     const envVars = {
         "CLOUD_APIMGT_AUTHORISATION": "blabla"
     }
@@ -63,5 +62,19 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
         env: envVars
     };
 
-    return exec(command, execConfig);
+    return execFile('node', args, execConfig)
+        .then(({ stderr, stdout }) => {
+            logger.info(`successful execution`);
+            logger.info(`stdout was: ${stdout}`);
+            logger.info(`stderr was: ${stderr}`);
+
+            return Promise.resolve({ stderr, stdout });
+        })
+        .catch((err) => {
+            logger.error(`unsuccessful execution`);
+            logger.error(`stdout was: ${err.stdout}`);
+            logger.error(`stderr was: ${err.stderr}`);
+
+            return Promise.reject(err);
+        });
 }

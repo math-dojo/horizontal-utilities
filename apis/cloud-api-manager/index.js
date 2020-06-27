@@ -25,10 +25,11 @@ const argv = require('yargs')
         + ' which can be overwritten using this parameter'))
     .env('CLOUD_APIMGT')
     .alias('a', 'authorisation')
-    .demandOption(['a'], 'Please provide the environment parameter CLOUD_APIMGT_AUTHORISATION to work with this tool')
+    .describe('a', 'the authorisation credential that must be presented on interactions with the cloud provider.'
+        + ' It can also be set as an environment parameter: CLOUD_APIMGT_AUTHORISATION.')
     .usage("$0 --filePath ./path-to-file-relative-to-cwd --operation [create|update|delete] --type [api|policy]")
     .demandOption(['f', 'o', 't'], 'Please provide both file, operation and type arguments to work with this tool')
-    .epilogue('the environment parameter CLOUD_APIMGT_AUTHORISATION needs to be set in order for this cli to function.')
+    .epilogue('**warning**: be sure to set the authorisation parameter either via the environment or via the cli.')
     .help()
     .argv;
 
