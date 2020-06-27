@@ -40,7 +40,7 @@ function startServerAndReturn(desiredPort, {
         });
     }
     if (!disableApiCrudOps) {
-        app.all(/\/api\/apis\/([A-z]?[0-9]?)+$/, function (req, res) {
+        app.all(/\/api\/apis\/?([A-z]?[0-9]?)*$/, function (req, res) {
             res.send(tykCreateApiResponseData);
         });
     }
@@ -50,7 +50,7 @@ function startServerAndReturn(desiredPort, {
         });
     }
     if (!disablePolicyCrudOps) {
-        app.all(/api\/portal\/policies\/([A-z]?[0-9]?)+$/, function (req, res) {
+        app.all(/api\/portal\/policies\/?([A-z]?[0-9]?)*$/, function (req, res) {
             res.send(updatePolicyByIdResponseData);
         });
     }
