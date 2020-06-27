@@ -19,6 +19,7 @@ class CloudApiManagerController {
         authorisation,
         baseUrlForProvider
     }) {
+        logger.info("initialising new CloudApiManagerController");
         if ((!authorisation) || authorisation.length < 1) {
             const errorMessage = `authorisation cannot be undefined, null or empty`;
             logger.error(errorMessage)
@@ -37,6 +38,7 @@ class CloudApiManagerController {
                 logger.error(errorMessage)
                 throw new Error(errorMessage);
         }
+        logger.info("successfullly initialised new CloudApiManagerController")
     }
 
     /**
