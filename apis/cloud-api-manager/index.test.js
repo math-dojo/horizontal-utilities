@@ -20,7 +20,7 @@ describe("Index", function () {
         const successServerAddress = `http://localhost:${successServer.address().port}`;
 
         const executionPromise = setupExecution({
-            pathToAsset: path.resolve(process.cwd(), 'src/test/resources/sample_api_payload.js'),
+            pathToAsset: path.resolve(process.cwd(), 'src/test/resources/sample_api_request_payload.json'),
             assetType: 'api',
             operation: 'create',
             baseUrlForProvider: successServerAddress
@@ -54,13 +54,12 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
         '--baseUrlForProvider',
         `${baseUrlForProvider}`
     ];
-    const envVars = {
-        "CLOUD_APIMGT_AUTHORISATION": "blabla"
-    }
+
+    process.env['CLOUD_APIMGT_AUTHORISATION'] = "blabla";
     const execConfig = {
         cwd: path.parse(process.cwd()).dir,
         windowsHide: true,
-        env: envVars
+        env: process.env
     };
 
     return exec('which node')
@@ -87,7 +86,7 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
             return Promise.resolve({ stderr, stdout });
         })
         .catch((err) => {
-            logger.error(`unsuccessful execution`);
+            logger.error(`unsuccessful execution because: ${err.message}`);
             logger.error(`stdout was: ${err.stdout}`);
             logger.error(`stderr was: ${err.stderr}`);
 
