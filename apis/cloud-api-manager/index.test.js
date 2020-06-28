@@ -35,8 +35,27 @@ describe("Index", function () {
             });
     });
 
-    it("should exit with code 1 successfully run", function () {
+    it("should exit with code 1 if unsuccessfully run", function () {
+        const successServer = tyk(0, { disablePolicyCrudOps: true });
 
+        const successServerAddress = `http://localhost:${successServer.address().port}`;
+
+        const executionPromise = setupExecution({
+            pathToAsset: path.resolve(process.cwd(), 'src/test/resources/sample_policy_request_payload.json'),
+            assetType: 'policy',
+            operation: 'update',
+            baseUrlForProvider: successServerAddress
+        })
+
+        return Promise.all([
+            expect(executionPromise).eventually.to.be.rejectedWith(/update operation failed because: (.*) 404/)
+        ])
+            .finally(() => {
+                logger.info(`now closing the server at ${successServerAddress}`);
+                successServer.close(function () {
+                    logger.info(`now closed server at ${successServerAddress}`);
+                });
+            });
     });
 })
 
@@ -90,6 +109,9 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
             logger.error(`stdout was: ${err.stdout}`);
             logger.error(`stderr was: ${err.stderr}`);
 
+            if (err.stderr) {
+                return Promise.reject(new Error(`${err.stderr}`));
+            }
             return Promise.reject(err);
         });
 }
