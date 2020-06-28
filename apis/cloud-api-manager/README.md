@@ -6,3 +6,5 @@ For use in an execute-only sense, please use `npm install --production` to get i
 
 It is designed to be executed via the command line using node.js. To view the possible arguments
 try: `node ./index.js --help`
+
+In order to view logs from the running process, please set the environment variable as `DEBUG=cloud-api-manager`
