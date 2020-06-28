@@ -13,7 +13,7 @@ const path = require('path');
 
 const { tyk } = require('./src/test/resources/mock_cloud_provider_server/tyk');
 
-describe("Index", function () {
+describe("Index: CLI End-to-end Tests", function () {
     it("should exit with code 0 successfully run", function () {
         const successServer = tyk(0);
 
