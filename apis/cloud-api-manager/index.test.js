@@ -75,6 +75,11 @@ function setupExecution({ pathToAsset, assetType, operation, baseUrlForProvider 
     ];
 
     process.env['CLOUD_APIMGT_AUTHORISATION'] = "blabla";
+    /* The cloud-api-manager program by default does not log to the console so
+        this needs to be selectively enabled via the DEBUG environment parameter 
+        used to show the logs. */
+    process.env['DEBUG'] = "cloud-api-manager*";
+
     const execConfig = {
         cwd: path.parse(process.cwd()).dir,
         windowsHide: true,
