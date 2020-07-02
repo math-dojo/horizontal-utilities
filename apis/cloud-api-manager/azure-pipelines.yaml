@@ -1,0 +1,27 @@
+trigger:
+  - master
+  - develop
+#  - ft*  # Mute feature branch build. These can be built either on PR or unmuted for testing before a PR.
+
+pool:
+  vmImage: "ubuntu-latest"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Build_and_Exec_Unit_Tests
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '12.x'
+            displayName: 'Install Node.js'
+          
+          - script: |
+              cd ./apis/cloud-api-manager
+              npm install
+            displayName: 'Install dependencies'
+          
+          - script: |
+              cd ./apis/cloud-api-manager
+              npm test
+            displayName: 'run unit and integration tests'

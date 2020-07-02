@@ -1,0 +1,6 @@
+{
+    "spec": [
+        "src/test/**/*.test.js",
+        "index.test.js"
+    ]
+}

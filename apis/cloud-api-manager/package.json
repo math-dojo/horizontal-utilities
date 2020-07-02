@@ -1,0 +1,31 @@
+{
+  "name": "cloud-api-manager",
+  "version": "1.0.0",
+  "description": "Package for managing apis deployed on the tyk-cloud",
+  "main": "index.js",
+  "scripts": {
+    "test:showlogs": "DEBUG=cloud-api-manager* ./node_modules/.bin/mocha",
+    "test": "./node_modules/.bin/mocha"
+  },
+  "author": "noce2",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "debug": "^4.1.1",
+    "pino": "^6.3.2",
+    "pino-debug": "^1.3.0",
+    "yargs": "^15.3.1"
+  },
+  "engines": {
+    "node": "^12.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "express": "^4.17.1",
+    "mocha": "^7.2.0",
+    "nock": "^12.0.3",
+    "pino-pretty": "^4.0.0",
+    "sinon": "^9.0.2"
+  }
+}
